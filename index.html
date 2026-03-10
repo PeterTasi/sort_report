@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorting Report</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --panel: rgba(255, 250, 242, 0.9);
+      --ink: #1d1d1b;
+      --muted: #5e5a54;
+      --accent: #c45c2c;
+      --accent-dark: #8a3b18;
+      --line: rgba(29, 29, 27, 0.12);
+      --good: #2f7d4a;
+      --shadow: 0 18px 60px rgba(76, 49, 32, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", "Noto Sans TC", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(196, 92, 44, 0.18), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(47, 125, 74, 0.12), transparent 24%),
+        linear-gradient(135deg, #f8f3ea 0%, #efe4d2 48%, #f5eee4 100%);
+      padding: 32px 20px;
+    }
+
+    .shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 24px;
+    }
+
+    .hero,
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      padding: 32px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .eyebrow {
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.76rem;
+      color: var(--accent-dark);
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 1.05;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+    }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 1.35rem;
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    textarea,
+    select,
+    button {
+      font: inherit;
+    }
+
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--ink);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: transform 180ms ease, opacity 180ms ease, background 180ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .secondary {
+      background: rgba(29, 29, 27, 0.08);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.58);
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+    }
+
+    .metric strong {
+      font-size: 1.3rem;
+    }
+
+    .bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      min-height: 260px;
+      padding: 18px 12px 12px;
+      margin-top: 18px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.3));
+      border: 1px solid rgba(29, 29, 27, 0.08);
+      overflow-x: auto;
+    }
+
+    .bar-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 34px;
+      gap: 8px;
+      animation: rise 420ms ease;
+    }
+
+    .bar {
+      width: 100%;
+      min-width: 24px;
+      border-radius: 14px 14px 8px 8px;
+      background: linear-gradient(180deg, #e18d50 0%, #c45c2c 100%);
+      box-shadow: inset 0 -10px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    .bar-wrap.sorted .bar {
+      background: linear-gradient(180deg, #57ae74 0%, #2f7d4a 100%);
+    }
+
+    .bar-value {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .result {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(47, 125, 74, 0.08);
+      color: var(--good);
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .notes {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .meta {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 18px 14px;
+      }
+
+      .hero,
+      .panel {
+        padding: 20px;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow">sort_report</p>
+      <h1>Sorting Demo 與結果報告</h1>
+      <p>輸入一串數字，選擇排序方法與順序，頁面會輸出排序後結果、資料筆數、執行時間，並以長條圖顯示排序狀態。這是一個單檔 HTML，直接開啟就能使用。</p>
+    </section>
+
+    <section class="content">
+      <div class="panel">
+        <h2>資料輸入</h2>
+        <label class="label" for="numbers">請輸入數字，以逗號或空白分隔</label>
+        <textarea id="numbers">42, 7, 19, 88, 13, 55, 2, 67</textarea>
+
+        <div class="row">
+          <div>
+            <label class="label" for="algorithm">排序演算法</label>
+            <select id="algorithm">
+              <option value="bubble">Bubble Sort</option>
+              <option value="selection">Selection Sort</option>
+              <option value="insertion">Insertion Sort</option>
+              <option value="quick">Quick Sort</option>
+            </select>
+          </div>
+          <div>
+            <label class="label" for="order">排序方向</label>
+            <select id="order">
+              <option value="asc">由小到大</option>
+              <option value="desc">由大到小</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="primary" id="sortButton">開始排序</button>
+          <button class="secondary" id="sampleButton">產生新範例</button>
+        </div>
+
+        <div class="meta">
+          <div class="metric">
+            <span>資料筆數</span>
+            <strong id="countValue">8</strong>
+          </div>
+          <div class="metric">
+            <span>執行時間</span>
+            <strong id="timeValue">0 ms</strong>
+          </div>
+          <div class="metric">
+            <span>目前方法</span>
+            <strong id="methodValue">Bubble Sort</strong>
+          </div>
+        </div>
+
+        <div class="result" id="resultText">排序結果會顯示在這裡。</div>
+      </div>
+
+      <div class="panel">
+        <h2>視覺化與說明</h2>
+        <div class="bars" id="bars"></div>
+        <ul class="notes">
+          <li>Bubble Sort: 逐步交換相鄰元素。</li>
+          <li>Selection Sort: 每輪挑出最小或最大值。</li>
+          <li>Insertion Sort: 將元素插入已排序區間。</li>
+          <li>Quick Sort: 使用 pivot 分割資料。</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const numbersInput = document.getElementById("numbers");
+    const algorithmSelect = document.getElementById("algorithm");
+    const orderSelect = document.getElementById("order");
+    const sortButton = document.getElementById("sortButton");
+    const sampleButton = document.getElementById("sampleButton");
+    const countValue = document.getElementById("countValue");
+    const timeValue = document.getElementById("timeValue");
+    const methodValue = document.getElementById("methodValue");
+    const resultText = document.getElementById("resultText");
+    const bars = document.getElementById("bars");
+
+    function parseNumbers(value) {
+      return value
+        .split(/[\s,]+/)
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .map((item) => Number(item))
+        .filter((item) => !Number.isNaN(item));
+    }
+
+    function compareValues(left, right, order) {
+      return order === "asc" ? left - right : right - left;
+    }
+
+    function bubbleSort(values, order) {
+      const data = [...values];
+      for (let outer = 0; outer < data.length - 1; outer += 1) {
+        for (let inner = 0; inner < data.length - outer - 1; inner += 1) {
+          if (compareValues(data[inner], data[inner + 1], order) > 0) {
+            [data[inner], data[inner + 1]] = [data[inner + 1], data[inner]];
+          }
+        }
+      }
+      return data;
+    }
+
+    function selectionSort(values, order) {
+      const data = [...values];
+      for (let index = 0; index < data.length; index += 1) {
+        let targetIndex = index;
+        for (let cursor = index + 1; cursor < data.length; cursor += 1) {
+          if (compareValues(data[targetIndex], data[cursor], order) > 0) {
+            targetIndex = cursor;
+          }
+        }
+        [data[index], data[targetIndex]] = [data[targetIndex], data[index]];
+      }
+      return data;
+    }
+
+    function insertionSort(values, order) {
+      const data = [...values];
+      for (let index = 1; index < data.length; index += 1) {
+        const current = data[index];
+        let cursor = index - 1;
+        while (cursor >= 0 && compareValues(data[cursor], current, order) > 0) {
+          data[cursor + 1] = data[cursor];
+          cursor -= 1;
+        }
+        data[cursor + 1] = current;
+      }
+      return data;
+    }
+
+    function quickSort(values, order) {
+      if (values.length <= 1) {
+        return [...values];
+      }
+
+      const [pivot, ...rest] = values;
+      const left = [];
+      const right = [];
+
+      rest.forEach((value) => {
+        if (compareValues(value, pivot, order) < 0) {
+          left.push(value);
+        } else {
+          right.push(value);
+        }
+      });
+
+      return [...quickSort(left, order), pivot, ...quickSort(right, order)];
+    }
+
+    function sortValues(values, algorithm, order) {
+      if (algorithm === "selection") {
+        return selectionSort(values, order);
+      }
+
+      if (algorithm === "insertion") {
+        return insertionSort(values, order);
+      }
+
+      if (algorithm === "quick") {
+        return quickSort(values, order);
+      }
+
+      return bubbleSort(values, order);
+    }
+
+    function renderBars(values, sorted = false) {
+      bars.innerHTML = "";
+
+      if (values.length === 0) {
+        bars.innerHTML = "<p>請先輸入有效數字。</p>";
+        return;
+      }
+
+      const max = Math.max(...values.map((value) => Math.abs(value)), 1);
+
+      values.forEach((value) => {
+        const wrap = document.createElement("div");
+        wrap.className = sorted ? "bar-wrap sorted" : "bar-wrap";
+
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        bar.style.height = `${Math.max((Math.abs(value) / max) * 190, 16)}px`;
+
+        const label = document.createElement("div");
+        label.className = "bar-value";
+        label.textContent = String(value);
+
+        wrap.appendChild(bar);
+        wrap.appendChild(label);
+        bars.appendChild(wrap);
+      });
+    }
+
+    function algorithmLabel(value) {
+      const labels = {
+        bubble: "Bubble Sort",
+        selection: "Selection Sort",
+        insertion: "Insertion Sort",
+        quick: "Quick Sort"
+      };
+      return labels[value] || "Bubble Sort";
+    }
+
+    function runSort() {
+      const rawValues = parseNumbers(numbersInput.value);
+
+      if (rawValues.length === 0) {
+        countValue.textContent = "0";
+        timeValue.textContent = "0 ms";
+        resultText.textContent = "沒有可排序的有效數字，請重新輸入。";
+        renderBars([]);
+        return;
+      }
+
+      const algorithm = algorithmSelect.value;
+      const order = orderSelect.value;
+      const startedAt = performance.now();
+      const sorted = sortValues(rawValues, algorithm, order);
+      const elapsed = performance.now() - startedAt;
+
+      countValue.textContent = String(rawValues.length);
+      timeValue.textContent = `${elapsed.toFixed(3)} ms`;
+      methodValue.textContent = algorithmLabel(algorithm);
+      resultText.textContent = `排序結果: ${sorted.join(", ")}`;
+      renderBars(sorted, true);
+    }
+
+    function createSample() {
+      const sample = Array.from({ length: 10 }, () => Math.floor(Math.random() * 90) + 10);
+      numbersInput.value = sample.join(", ");
+      renderBars(sample, false);
+      countValue.textContent = String(sample.length);
+      timeValue.textContent = "0 ms";
+      resultText.textContent = "已產生新範例，按下開始排序即可查看結果。";
+    }
+
+    sortButton.addEventListener("click", runSort);
+    sampleButton.addEventListener("click", createSample);
+    algorithmSelect.addEventListener("change", () => {
+      methodValue.textContent = algorithmLabel(algorithmSelect.value);
+    });
+
+    renderBars(parseNumbers(numbersInput.value), false);
+    methodValue.textContent = algorithmLabel(algorithmSelect.value);
+  </script>
+</body>
+</html>
