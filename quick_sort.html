@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Sort Demo</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --panel: rgba(255, 250, 242, 0.9);
+      --ink: #1d1d1b;
+      --muted: #5e5a54;
+      --accent: #c45c2c;
+      --line: rgba(29, 29, 27, 0.12);
+      --good: #2f7d4a;
+      --shadow: 0 18px 60px rgba(76, 49, 32, 0.15);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", "Noto Sans TC", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(196, 92, 44, 0.18), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(47, 125, 74, 0.12), transparent 24%),
+        linear-gradient(135deg, #f8f3ea 0%, #efe4d2 48%, #f5eee4 100%);
+      padding: 32px 20px;
+    }
+
+    .shell { max-width: 1000px; margin: 0 auto; display: grid; gap: 24px; }
+
+    .hero, .panel {
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      padding: 24px;
+    }
+
+    .hero h1 { margin: 0 0 10px; font-size: clamp(1.8rem, 3.5vw, 2.8rem); }
+    .hero p { margin: 0; color: var(--muted); line-height: 1.7; }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 14px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .label { display: block; margin-bottom: 8px; font-weight: 700; }
+
+    textarea, select, button { font: inherit; }
+    textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--ink);
+    }
+
+    textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
+
+    .row { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 16px; }
+
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: transform 180ms ease, opacity 180ms ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    .primary { background: var(--accent); color: #fff; font-weight: 700; }
+    .secondary { background: rgba(29, 29, 27, 0.08); color: var(--ink); font-weight: 600; }
+
+    .meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
+
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.58);
+    }
+
+    .metric span { display: block; color: var(--muted); font-size: 0.85rem; margin-bottom: 6px; }
+    .metric strong { font-size: 1.2rem; }
+
+    .result {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(47, 125, 74, 0.08);
+      color: var(--good);
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 18px 14px; }
+      .hero, .panel { padding: 20px; }
+      .meta { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <a class="back-link" href="index.html">回首頁</a>
+      <h1>Quick Sort</h1>
+      <p>固定使用 Quick Sort 進行排序。請輸入數字並選擇排序方向。</p>
+    </section>
+
+    <section class="panel">
+      <label class="label" for="numbers">請輸入數字，以逗號或空白分隔</label>
+      <textarea id="numbers">42, 7, 19, 88, 13, 55, 2, 67</textarea>
+
+      <div class="row">
+        <div>
+          <label class="label" for="order">排序方向</label>
+          <select id="order">
+            <option value="asc">由小到大</option>
+            <option value="desc">由大到小</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="sortButton">開始排序</button>
+        <button class="secondary" id="sampleButton">產生新範例</button>
+      </div>
+
+      <div class="meta">
+        <div class="metric">
+          <span>資料筆數</span>
+          <strong id="countValue">8</strong>
+        </div>
+        <div class="metric">
+          <span>執行時間</span>
+          <strong id="timeValue">0 ms</strong>
+        </div>
+      </div>
+
+      <div class="result" id="resultText">排序結果會顯示在這裡。</div>
+    </section>
+  </main>
+
+  <script>
+    const numbersInput = document.getElementById("numbers");
+    const orderSelect = document.getElementById("order");
+    const sortButton = document.getElementById("sortButton");
+    const sampleButton = document.getElementById("sampleButton");
+    const countValue = document.getElementById("countValue");
+    const timeValue = document.getElementById("timeValue");
+    const resultText = document.getElementById("resultText");
+
+    function parseNumbers(value) {
+      return value
+        .split(/[\s,]+/)
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .map((item) => Number(item))
+        .filter((item) => !Number.isNaN(item));
+    }
+
+    function compareValues(left, right, order) {
+      return order === "asc" ? left - right : right - left;
+    }
+
+    function quickSort(values, order) {
+      if (values.length <= 1) {
+        return [...values];
+      }
+
+      const [pivot, ...rest] = values;
+      const left = [];
+      const right = [];
+
+      rest.forEach((value) => {
+        if (compareValues(value, pivot, order) < 0) {
+          left.push(value);
+        } else {
+          right.push(value);
+        }
+      });
+
+      return [...quickSort(left, order), pivot, ...quickSort(right, order)];
+    }
+
+    function runSort() {
+      const rawValues = parseNumbers(numbersInput.value);
+      if (rawValues.length === 0) {
+        countValue.textContent = "0";
+        timeValue.textContent = "0 ms";
+        resultText.textContent = "沒有可排序的有效數字，請重新輸入。";
+        return;
+      }
+
+      const order = orderSelect.value;
+      const startedAt = performance.now();
+      const sorted = quickSort(rawValues, order);
+      const elapsed = performance.now() - startedAt;
+
+      countValue.textContent = String(rawValues.length);
+      timeValue.textContent = `${elapsed.toFixed(3)} ms`;
+      resultText.textContent = `排序結果: ${sorted.join(", ")}`;
+    }
+
+    function createSample() {
+      const sample = Array.from({ length: 10 }, () => Math.floor(Math.random() * 90) + 10);
+      numbersInput.value = sample.join(", ");
+      countValue.textContent = String(sample.length);
+      timeValue.textContent = "0 ms";
+      resultText.textContent = "已產生新範例，按下開始排序即可查看結果。";
+    }
+
+    sortButton.addEventListener("click", runSort);
+    sampleButton.addEventListener("click", createSample);
+  </script>
+</body>
+</html>
