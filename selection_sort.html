@@ -8,10 +8,51 @@
 </head>
 <body>
   <main class="page-shell">
+    <section class="top-banner glass">
+      <p>Sorting Lab</p>
+      <div class="top-links">
+        <a href="index.html">首頁</a>
+        <a href="quick_sort.html">Quick</a>
+        <a href="bubble_sort.html">Bubble</a>
+        <a class="active" href="selection_sort.html">Selection</a>
+        <a href="insertion_sort.html">Insertion</a>
+      </div>
+    </section>
+
     <section class="page-head glass">
       <a class="back-link" href="index.html">回首頁</a>
       <h1>Selection Sort</h1>
       <p>每一輪找出目前區間最小值（或最大值）並放到正確位置。可透過單步模式觀察「選最值」到「交換」的完整流程。</p>
+      <div class="page-hero-meta">
+        <span>平均時間複雜度 O(n^2)</span>
+        <span>空間複雜度 O(1)</span>
+        <span>交換次數少於 Bubble</span>
+      </div>
+    </section>
+
+    <section class="quick-switch glass panel">
+      <h2>演算法快速切換</h2>
+      <div class="quick-switch-links">
+        <a href="quick_sort.html">Quick Sort</a>
+        <a href="bubble_sort.html">Bubble Sort</a>
+        <a class="active" href="selection_sort.html">Selection Sort</a>
+        <a href="insertion_sort.html">Insertion Sort</a>
+      </div>
+    </section>
+
+    <section class="highlight-strip">
+      <article class="highlight-card glass">
+        <span>比較策略</span>
+        <strong>每輪掃描找最值</strong>
+      </article>
+      <article class="highlight-card glass">
+        <span>交換行為</span>
+        <strong>每輪最多一次交換</strong>
+      </article>
+      <article class="highlight-card glass">
+        <span>觀察重點</span>
+        <strong>目標位置逐輪固定</strong>
+      </article>
     </section>
 
     <section class="workspace">

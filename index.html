@@ -8,14 +8,40 @@
 </head>
 <body>
   <main class="page-shell">
+    <section class="top-banner glass">
+      <p>Sorting Lab</p>
+      <div class="top-links">
+        <a href="quick_sort.html">Quick</a>
+        <a href="bubble_sort.html">Bubble</a>
+        <a href="selection_sort.html">Selection</a>
+        <a href="insertion_sort.html">Insertion</a>
+      </div>
+    </section>
+
     <section class="home-hero glass">
       <div>
       <p class="eyebrow">sort_report</p>
       <h1>排序法互動工作台</h1>
-      <p>把你的數字貼進去，直接比較四種經典排序法。每個頁面都能切換升冪或降冪，並顯示執行時間與結果，適合報告展示與課堂講解。</p>
+      <p>把你的數字貼進去，直接比較四種經典排序法。每個頁面都能切換升冪或降冪，並顯示執行時間、步驟敘事與即時條圖，適合報告展示與課堂講解。</p>
       <div class="hero-actions">
         <a class="pill primary" href="quick_sort.html">先試 Quick Sort</a>
         <a class="pill" href="bubble_sort.html">看 Bubble Sort</a>
+        <a class="pill" href="#compare">看演算法比較</a>
+      </div>
+
+      <div class="hero-metrics">
+        <article>
+          <span>互動頁面</span>
+          <strong>4</strong>
+        </article>
+        <article>
+          <span>可切換排序方向</span>
+          <strong>ASC / DESC</strong>
+        </article>
+        <article>
+          <span>每頁功能</span>
+          <strong>排序 + 單步模擬</strong>
+        </article>
       </div>
       </div>
 
@@ -43,7 +69,28 @@
       </aside>
     </section>
 
-    <section class="glass panel">
+    <section class="glass panel flow-panel">
+      <h2>操作流程</h2>
+      <div class="flow-grid">
+        <article class="flow-item">
+          <span>STEP 1</span>
+          <h3>輸入資料</h3>
+          <p>貼上數字串列，使用逗號或空白分隔都可以。</p>
+        </article>
+        <article class="flow-item">
+          <span>STEP 2</span>
+          <h3>選擇排序方向</h3>
+          <p>切換升冪或降冪，快速對照同一筆資料在不同條件下的結果。</p>
+        </article>
+        <article class="flow-item">
+          <span>STEP 3</span>
+          <h3>看結果與步驟</h3>
+          <p>查看執行時間，並使用單步模擬逐格理解演算法運作。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="glass panel" id="compare">
       <h2>選擇排序法入口</h2>
       <div class="home-grid">
         <article class="home-card">
@@ -73,6 +120,46 @@
           <p>將元素逐一插入已排序區間，小型資料或近乎排序資料時表現不錯。</p>
           <a class="go-link" href="insertion_sort.html">進入 Insertion Sort</a>
         </article>
+      </div>
+
+      <div class="compare-table-wrap">
+        <h3>快速比較表</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>演算法</th>
+              <th>平均時間複雜度</th>
+              <th>特性</th>
+              <th>建議情境</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Quick Sort</td>
+              <td>O(n log n)</td>
+              <td>分治遞迴、平均效能佳</td>
+              <td>一般資料量中大型的排序展示</td>
+            </tr>
+            <tr>
+              <td>Bubble Sort</td>
+              <td>O(n^2)</td>
+              <td>相鄰交換、流程直觀</td>
+              <td>課堂講解交換概念與流程觀察</td>
+            </tr>
+            <tr>
+              <td>Selection Sort</td>
+              <td>O(n^2)</td>
+              <td>每輪選最值、交換次數少</td>
+              <td>理解「搜尋目標值」型流程</td>
+            </tr>
+            <tr>
+              <td>Insertion Sort</td>
+              <td>O(n^2)</td>
+              <td>插入已排序區間</td>
+              <td>小型資料或接近有序資料示範</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
   </main>

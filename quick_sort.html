@@ -8,10 +8,51 @@
 </head>
 <body>
   <main class="page-shell">
+    <section class="top-banner glass">
+      <p>Sorting Lab</p>
+      <div class="top-links">
+        <a href="index.html">首頁</a>
+        <a class="active" href="quick_sort.html">Quick</a>
+        <a href="bubble_sort.html">Bubble</a>
+        <a href="selection_sort.html">Selection</a>
+        <a href="insertion_sort.html">Insertion</a>
+      </div>
+    </section>
+
     <section class="page-head glass">
       <a class="back-link" href="index.html">回首頁</a>
       <h1>Quick Sort</h1>
       <p>Quick Sort 透過 pivot 切分左右區間再遞迴處理。單步模式可觀察 partition 比較、交換與 pivot 歸位。</p>
+      <div class="page-hero-meta">
+        <span>平均時間複雜度 O(n log n)</span>
+        <span>空間複雜度 O(log n)</span>
+        <span>大型資料常見選擇</span>
+      </div>
+    </section>
+
+    <section class="quick-switch glass panel">
+      <h2>演算法快速切換</h2>
+      <div class="quick-switch-links">
+        <a class="active" href="quick_sort.html">Quick Sort</a>
+        <a href="bubble_sort.html">Bubble Sort</a>
+        <a href="selection_sort.html">Selection Sort</a>
+        <a href="insertion_sort.html">Insertion Sort</a>
+      </div>
+    </section>
+
+    <section class="highlight-strip">
+      <article class="highlight-card glass">
+        <span>分治策略</span>
+        <strong>以 pivot 分割子區間</strong>
+      </article>
+      <article class="highlight-card glass">
+        <span>交換行為</span>
+        <strong>partition 期間集中交換</strong>
+      </article>
+      <article class="highlight-card glass">
+        <span>觀察重點</span>
+        <strong>pivot 歸位後遞迴左右區間</strong>
+      </article>
     </section>
 
     <section class="workspace">
