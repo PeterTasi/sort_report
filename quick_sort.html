@@ -3,153 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quick Sort Demo</title>
-  <style>
-    :root {
-      --bg: #f4efe6;
-      --panel: rgba(255, 250, 242, 0.9);
-      --ink: #1d1d1b;
-      --muted: #5e5a54;
-      --accent: #c45c2c;
-      --line: rgba(29, 29, 27, 0.12);
-      --good: #2f7d4a;
-      --shadow: 0 18px 60px rgba(76, 49, 32, 0.15);
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Segoe UI", "Noto Sans TC", sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at top left, rgba(196, 92, 44, 0.18), transparent 28%),
-        radial-gradient(circle at bottom right, rgba(47, 125, 74, 0.12), transparent 24%),
-        linear-gradient(135deg, #f8f3ea 0%, #efe4d2 48%, #f5eee4 100%);
-      padding: 32px 20px;
-    }
-
-    .shell { max-width: 1000px; margin: 0 auto; display: grid; gap: 24px; }
-
-    .hero, .panel {
-      background: var(--panel);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-      padding: 24px;
-    }
-
-    .hero h1 { margin: 0 0 10px; font-size: clamp(1.8rem, 3.5vw, 2.8rem); }
-    .hero p { margin: 0; color: var(--muted); line-height: 1.7; }
-
-    .back-link {
-      display: inline-block;
-      margin-bottom: 14px;
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: 700;
-    }
-
-    .label { display: block; margin-bottom: 8px; font-weight: 700; }
-
-    textarea, select, button { font: inherit; }
-    textarea, select {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px 16px;
-      background: rgba(255, 255, 255, 0.88);
-      color: var(--ink);
-    }
-
-    textarea { min-height: 120px; resize: vertical; line-height: 1.6; }
-
-    .row { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 16px; }
-
-    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
-
-    button {
-      border: 0;
-      border-radius: 999px;
-      padding: 12px 20px;
-      cursor: pointer;
-      transition: transform 180ms ease, opacity 180ms ease;
-    }
-
-    button:hover { transform: translateY(-1px); }
-    .primary { background: var(--accent); color: #fff; font-weight: 700; }
-    .secondary { background: rgba(29, 29, 27, 0.08); color: var(--ink); font-weight: 600; }
-
-    .meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
-
-    .metric {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.58);
-    }
-
-    .metric span { display: block; color: var(--muted); font-size: 0.85rem; margin-bottom: 6px; }
-    .metric strong { font-size: 1.2rem; }
-
-    .result {
-      margin-top: 18px;
-      padding: 14px 16px;
-      border-radius: 16px;
-      background: rgba(47, 125, 74, 0.08);
-      color: var(--good);
-      line-height: 1.6;
-      word-break: break-word;
-    }
-
-    @media (max-width: 640px) {
-      body { padding: 18px 14px; }
-      .hero, .panel { padding: 20px; }
-      .meta { grid-template-columns: 1fr; }
-    }
-  </style>
+  <title>Quick Sort Lab</title>
+  <link rel="stylesheet" href="theme.css">
 </head>
 <body>
-  <main class="shell">
-    <section class="hero">
+  <main class="page-shell">
+    <section class="page-head glass">
       <a class="back-link" href="index.html">回首頁</a>
       <h1>Quick Sort</h1>
-      <p>固定使用 Quick Sort 進行排序。請輸入數字並選擇排序方向。</p>
+      <p>透過 pivot 分割區間後遞迴排序，通常有很好的平均效能。這一頁可直接測試輸入資料與方向切換。</p>
     </section>
 
-    <section class="panel">
-      <label class="label" for="numbers">請輸入數字，以逗號或空白分隔</label>
-      <textarea id="numbers">42, 7, 19, 88, 13, 55, 2, 67</textarea>
+    <section class="workspace">
+      <article class="panel glass">
+        <label class="label" for="numbers">請輸入數字，以逗號或空白分隔</label>
+        <textarea id="numbers">42, 7, 19, 88, 13, 55, 2, 67</textarea>
 
-      <div class="row">
-        <div>
+        <div class="row">
           <label class="label" for="order">排序方向</label>
           <select id="order">
             <option value="asc">由小到大</option>
             <option value="desc">由大到小</option>
           </select>
         </div>
-      </div>
 
-      <div class="actions">
-        <button class="primary" id="sortButton">開始排序</button>
-        <button class="secondary" id="sampleButton">產生新範例</button>
-      </div>
-
-      <div class="meta">
-        <div class="metric">
-          <span>資料筆數</span>
-          <strong id="countValue">8</strong>
+        <div class="actions">
+          <button class="primary" id="sortButton">開始排序</button>
+          <button class="secondary" id="sampleButton">產生新範例</button>
         </div>
-        <div class="metric">
-          <span>執行時間</span>
-          <strong id="timeValue">0 ms</strong>
-        </div>
-      </div>
 
-      <div class="result" id="resultText">排序結果會顯示在這裡。</div>
+        <div class="metrics">
+          <div class="metric">
+            <span>資料筆數</span>
+            <strong id="countValue">8</strong>
+          </div>
+          <div class="metric">
+            <span>執行時間</span>
+            <strong id="timeValue">0 ms</strong>
+          </div>
+        </div>
+
+        <div class="result" id="resultText">排序結果會顯示在這裡。</div>
+      </article>
+
+      <aside class="preview-panel glass">
+        <h2>即時預覽</h2>
+        <p class="preview-note">條形圖長度會依排序後數值比例變化。</p>
+        <div class="iphone-wrap">
+          <div class="iphone">
+            <div class="iphone-screen">
+              <div class="phone-chip-row">
+                <span class="phone-chip">Quick</span>
+                <span class="phone-chip" id="orderTag">ASC</span>
+              </div>
+              <div class="bar-grid" id="barGrid"></div>
+            </div>
+          </div>
+        </div>
+      </aside>
     </section>
   </main>
 
@@ -161,6 +72,8 @@
     const countValue = document.getElementById("countValue");
     const timeValue = document.getElementById("timeValue");
     const resultText = document.getElementById("resultText");
+    const barGrid = document.getElementById("barGrid");
+    const orderTag = document.getElementById("orderTag");
 
     function parseNumbers(value) {
       return value
@@ -195,12 +108,33 @@
       return [...quickSort(left, order), pivot, ...quickSort(right, order)];
     }
 
+    function renderBars(values) {
+      if (values.length === 0) {
+        barGrid.innerHTML = "";
+        return;
+      }
+
+      const min = Math.min(...values);
+      const normalized = values.map((value) => value - min + 5);
+      const max = Math.max(...normalized);
+
+      barGrid.innerHTML = normalized
+        .slice(0, 10)
+        .map((value) => {
+          const width = Math.max(14, Math.round((value / max) * 100));
+          return `<div class="bar" style="width:${width}%"></div>`;
+        })
+        .join("");
+    }
+
     function runSort() {
       const rawValues = parseNumbers(numbersInput.value);
+      orderTag.textContent = orderSelect.value.toUpperCase();
       if (rawValues.length === 0) {
         countValue.textContent = "0";
         timeValue.textContent = "0 ms";
         resultText.textContent = "沒有可排序的有效數字，請重新輸入。";
+        renderBars([]);
         return;
       }
 
@@ -212,6 +146,7 @@
       countValue.textContent = String(rawValues.length);
       timeValue.textContent = `${elapsed.toFixed(3)} ms`;
       resultText.textContent = `排序結果: ${sorted.join(", ")}`;
+      renderBars(sorted);
     }
 
     function createSample() {
@@ -220,10 +155,12 @@
       countValue.textContent = String(sample.length);
       timeValue.textContent = "0 ms";
       resultText.textContent = "已產生新範例，按下開始排序即可查看結果。";
+      renderBars(sample);
     }
 
     sortButton.addEventListener("click", runSort);
     sampleButton.addEventListener("click", createSample);
+    renderBars(parseNumbers(numbersInput.value));
   </script>
 </body>
 </html>

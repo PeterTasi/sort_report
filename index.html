@@ -3,199 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sorting Report Home</title>
-  <style>
-    :root {
-      --bg: #f3efe7;
-      --panel: rgba(255, 252, 246, 0.92);
-      --ink: #1f1c18;
-      --muted: #5f5b54;
-      --line: rgba(31, 28, 24, 0.15);
-      --accent: #cb5524;
-      --accent-dark: #8a3517;
-      --shadow: 0 20px 56px rgba(76, 44, 24, 0.16);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Segoe UI", "Noto Sans TC", sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 12% 10%, rgba(203, 85, 36, 0.2), transparent 32%),
-        radial-gradient(circle at 88% 86%, rgba(53, 120, 80, 0.14), transparent 30%),
-        linear-gradient(145deg, #f8f3ea 0%, #efe2ce 50%, #f7f0e5 100%);
-      padding: 32px 18px;
-    }
-
-    .shell {
-      max-width: 1080px;
-      margin: 0 auto;
-      display: grid;
-      gap: 24px;
-    }
-
-    .hero,
-    .panel,
-    .card {
-      background: var(--panel);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-    }
-
-    .hero {
-      padding: 32px;
-      display: grid;
-      gap: 14px;
-    }
-
-    .eyebrow {
-      margin: 0;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      font-size: 0.78rem;
-      color: var(--accent-dark);
-      font-weight: 700;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 4vw, 3.5rem);
-      line-height: 1.06;
-    }
-
-    .hero p {
-      margin: 0;
-      max-width: 760px;
-      color: var(--muted);
-      line-height: 1.75;
-      font-size: 1.04rem;
-    }
-
-    .panel {
-      padding: 26px;
-    }
-
-    .panel h2 {
-      margin: 0 0 14px;
-      font-size: 1.36rem;
-    }
-
-    .panel p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.8;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .card {
-      padding: 22px;
-      border: 1px solid var(--line);
-      display: grid;
-      gap: 12px;
-      transition: transform 170ms ease, box-shadow 170ms ease;
-    }
-
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 24px 52px rgba(42, 25, 12, 0.2);
-    }
-
-    .card h3 {
-      margin: 0;
-      font-size: 1.25rem;
-    }
-
-    .card p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    .card a {
-      display: inline-block;
-      text-decoration: none;
-      background: var(--accent);
-      color: #fff;
-      font-weight: 700;
-      border-radius: 999px;
-      padding: 10px 16px;
-      width: fit-content;
-      transition: opacity 170ms ease;
-    }
-
-    .card a:hover {
-      opacity: 0.88;
-    }
-
-    @media (max-width: 860px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 620px) {
-      body {
-        padding: 16px 12px;
-      }
-
-      .hero,
-      .panel,
-      .card {
-        border-radius: 18px;
-      }
-
-      .hero,
-      .panel {
-        padding: 20px;
-      }
-    }
-  </style>
+  <title>Sorting Lab</title>
+  <link rel="stylesheet" href="theme.css">
 </head>
 <body>
-  <main class="shell">
-    <section class="hero">
+  <main class="page-shell">
+    <section class="home-hero glass">
+      <div>
       <p class="eyebrow">sort_report</p>
-      <h1>排序法入口網站</h1>
-      <p>這個首頁是你的一開始入口。請從下方選擇四種排序法之一，進入獨立頁面後可輸入資料、選擇升冪或降冪、查看排序結果和執行時間。</p>
+      <h1>排序法互動工作台</h1>
+      <p>把你的數字貼進去，直接比較四種經典排序法。每個頁面都能切換升冪或降冪，並顯示執行時間與結果，適合報告展示與課堂講解。</p>
+      <div class="hero-actions">
+        <a class="pill primary" href="quick_sort.html">先試 Quick Sort</a>
+        <a class="pill" href="bubble_sort.html">看 Bubble Sort</a>
+      </div>
+      </div>
+
+      <aside class="iphone-wrap" aria-hidden="true">
+        <div class="iphone">
+          <div class="iphone-screen">
+            <div class="phone-chip-row">
+              <span class="phone-chip">ASC</span>
+              <span class="phone-chip">10 items</span>
+            </div>
+            <div class="phone-card">
+              <strong>Quick Sort</strong>
+              <p>9, 12, 17, 28, 41, 55</p>
+            </div>
+            <div class="phone-card">
+              <strong>Latency</strong>
+              <p>0.139 ms</p>
+            </div>
+            <div class="phone-card">
+              <strong>Status</strong>
+              <p>Ready for demo</p>
+            </div>
+          </div>
+        </div>
+      </aside>
     </section>
 
-    <section class="panel">
-      <h2>選擇排序法</h2>
-      <div class="grid">
-        <article class="card">
+    <section class="glass panel">
+      <h2>選擇排序法入口</h2>
+      <div class="home-grid">
+        <article class="home-card">
+          <span class="card-meta">O(n²)</span>
           <h3>Bubble Sort</h3>
           <p>逐步比較相鄰元素並交換位置，概念直覺，適合入門理解排序流程。</p>
-          <a href="bubble_sort.html">前往 Bubble Sort</a>
+          <a class="go-link" href="bubble_sort.html">進入 Bubble Sort</a>
         </article>
 
-        <article class="card">
+        <article class="home-card">
+          <span class="card-meta">平均 O(n log n)</span>
           <h3>Quick Sort</h3>
           <p>透過 pivot 將資料切成左右子區間後遞迴排序，平均效率良好。</p>
-          <a href="quick_sort.html">前往 Quick Sort</a>
+          <a class="go-link" href="quick_sort.html">進入 Quick Sort</a>
         </article>
 
-        <article class="card">
+        <article class="home-card">
+          <span class="card-meta">O(n²)</span>
           <h3>Selection Sort</h3>
           <p>每一輪選出最小值或最大值放到正確位置，步驟規律清楚。</p>
-          <a href="selection_sort.html">前往 Selection Sort</a>
+          <a class="go-link" href="selection_sort.html">進入 Selection Sort</a>
         </article>
 
-        <article class="card">
+        <article class="home-card">
+          <span class="card-meta">O(n²)</span>
           <h3>Insertion Sort</h3>
           <p>將元素逐一插入已排序區間，小型資料或近乎排序資料時表現不錯。</p>
-          <a href="insertion_sort.html">前往 Insertion Sort</a>
+          <a class="go-link" href="insertion_sort.html">進入 Insertion Sort</a>
         </article>
       </div>
     </section>
