@@ -386,6 +386,81 @@ button.secondary {
   font-size: 0.92rem;
 }
 
+.algo-info {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+  font-size: 0.95rem;
+}
+
+.complexity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.complexity-item {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 10px;
+}
+
+.complexity-item span {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.complexity-item strong {
+  font-size: 0.96rem;
+}
+
+.step-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.step-controls button {
+  font-size: 0.86rem;
+  padding: 8px 12px;
+}
+
+.step-controls .neutral {
+  background: rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+}
+
+.step-box {
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 12px;
+  background: rgba(219, 234, 254, 0.44);
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.step-box p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.56;
+}
+
+.step-index {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border: 1px solid rgba(2, 132, 199, 0.28);
+  background: rgba(34, 211, 238, 0.18);
+  color: #0c4a6e;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .bar-grid {
   display: grid;
   gap: 8px;
@@ -433,6 +508,10 @@ button.secondary {
   }
 
   .metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .complexity-grid {
     grid-template-columns: 1fr;
   }
 }

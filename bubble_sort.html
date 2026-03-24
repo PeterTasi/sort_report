@@ -11,7 +11,7 @@
     <section class="page-head glass">
       <a class="back-link" href="index.html">回首頁</a>
       <h1>Bubble Sort</h1>
-      <p>以相鄰交換的方式逐步完成排序，適合觀察排序流程。輸入數字後可直接比較升冪與降冪結果。</p>
+      <p>以相鄰交換的方式逐步完成排序。你可以先一般排序，再用「單步前進」觀察每一次比較是否觸發交換。</p>
     </section>
 
     <section class="workspace">
@@ -47,8 +47,28 @@
       </article>
 
       <aside class="preview-panel glass">
-        <h2>即時預覽</h2>
-        <p class="preview-note">下方手機框會依排序結果更新條形圖長度。</p>
+        <h2>原理與 Big-O</h2>
+        <p class="algo-info">Bubble Sort 會在每一輪把較大值（或較小值）慢慢推到序列尾端，因此需要重複多輪相鄰比較與交換。</p>
+        <div class="complexity-grid">
+          <div class="complexity-item"><span>最佳</span><strong>O(n)</strong></div>
+          <div class="complexity-item"><span>平均</span><strong>O(n^2)</strong></div>
+          <div class="complexity-item"><span>最差</span><strong>O(n^2)</strong></div>
+          <div class="complexity-item"><span>空間</span><strong>O(1)</strong></div>
+        </div>
+
+        <h2>單步模擬</h2>
+        <p class="preview-note">先按「產生步驟」，再按「單步前進」觀看每次比較與交換。</p>
+        <div class="step-controls">
+          <button class="primary" id="buildStepsButton">產生步驟</button>
+          <button class="secondary" id="nextStepButton">單步前進</button>
+          <button class="neutral" id="resetStepsButton">重置步驟</button>
+        </div>
+        <span class="step-index" id="stepIndexText">步驟 0 / 0</span>
+        <div class="step-box">
+          <p id="stepDescription">尚未建立步驟，請先按「產生步驟」。</p>
+          <p id="stepArray">目前陣列: -</p>
+        </div>
+
         <div class="iphone-wrap">
           <div class="iphone">
             <div class="iphone-screen">
@@ -74,6 +94,15 @@
     const resultText = document.getElementById("resultText");
     const barGrid = document.getElementById("barGrid");
     const orderTag = document.getElementById("orderTag");
+    const buildStepsButton = document.getElementById("buildStepsButton");
+    const nextStepButton = document.getElementById("nextStepButton");
+    const resetStepsButton = document.getElementById("resetStepsButton");
+    const stepIndexText = document.getElementById("stepIndexText");
+    const stepDescription = document.getElementById("stepDescription");
+    const stepArray = document.getElementById("stepArray");
+
+    let steps = [];
+    let stepCursor = -1;
 
     function parseNumbers(value) {
       return value
@@ -100,6 +129,59 @@
       return data;
     }
 
+    function buildBubbleSteps(values, order) {
+      const data = [...values];
+      const flow = [
+        {
+          description: "初始化：準備開始 Bubble Sort。",
+          array: [...data]
+        }
+      ];
+
+      for (let outer = 0; outer < data.length - 1; outer += 1) {
+        flow.push({
+          description: `第 ${outer + 1} 輪開始：比較相鄰元素。`,
+          array: [...data]
+        });
+
+        for (let inner = 0; inner < data.length - outer - 1; inner += 1) {
+          const left = data[inner];
+          const right = data[inner + 1];
+          const shouldSwap = compareValues(left, right, order) > 0;
+
+          flow.push({
+            description: `比較 index ${inner} (${left}) 與 index ${inner + 1} (${right})。`,
+            array: [...data]
+          });
+
+          if (shouldSwap) {
+            [data[inner], data[inner + 1]] = [data[inner + 1], data[inner]];
+            flow.push({
+              description: `發生交換：${left} 與 ${right} 對調。`,
+              array: [...data]
+            });
+          } else {
+            flow.push({
+              description: "不需交換：順序已符合目前排序方向。",
+              array: [...data]
+            });
+          }
+        }
+
+        flow.push({
+          description: `第 ${outer + 1} 輪完成。`,
+          array: [...data]
+        });
+      }
+
+      flow.push({
+        description: "排序完成。",
+        array: [...data]
+      });
+
+      return flow;
+    }
+
     function renderBars(values) {
       if (values.length === 0) {
         barGrid.innerHTML = "";
@@ -117,6 +199,62 @@
           return `<div class="bar" style="width:${width}%"></div>`;
         })
         .join("");
+    }
+
+    function renderStep() {
+      if (steps.length === 0 || stepCursor < 0) {
+        stepIndexText.textContent = "步驟 0 / 0";
+        stepDescription.textContent = "尚未建立步驟，請先按「產生步驟」。";
+        stepArray.textContent = "目前陣列: -";
+        return;
+      }
+
+      const current = steps[stepCursor];
+      stepIndexText.textContent = `步驟 ${stepCursor + 1} / ${steps.length}`;
+      stepDescription.textContent = current.description;
+      stepArray.textContent = `目前陣列: ${current.array.join(", ")}`;
+      renderBars(current.array);
+    }
+
+    function buildStepsFlow() {
+      const rawValues = parseNumbers(numbersInput.value);
+      orderTag.textContent = orderSelect.value.toUpperCase();
+
+      if (rawValues.length === 0) {
+        steps = [];
+        stepCursor = -1;
+        renderStep();
+        resultText.textContent = "無法建立步驟：請先輸入有效數字。";
+        return;
+      }
+
+      steps = buildBubbleSteps(rawValues, orderSelect.value);
+      stepCursor = 0;
+      renderStep();
+      resultText.textContent = "已建立單步模擬流程，請按「單步前進」。";
+    }
+
+    function nextStep() {
+      if (steps.length === 0) {
+        buildStepsFlow();
+        return;
+      }
+
+      if (stepCursor < steps.length - 1) {
+        stepCursor += 1;
+        renderStep();
+        if (stepCursor === steps.length - 1) {
+          resultText.textContent = "單步模擬完成，你可以重置後重新觀察。";
+        }
+      }
+    }
+
+    function resetSteps() {
+      steps = [];
+      stepCursor = -1;
+      renderStep();
+      renderBars(parseNumbers(numbersInput.value));
+      resultText.textContent = "已重置單步模擬。";
     }
 
     function runSort() {
@@ -148,11 +286,18 @@
       timeValue.textContent = "0 ms";
       resultText.textContent = "已產生新範例，按下開始排序即可查看結果。";
       renderBars(sample);
+      steps = [];
+      stepCursor = -1;
+      renderStep();
     }
 
     sortButton.addEventListener("click", runSort);
     sampleButton.addEventListener("click", createSample);
+    buildStepsButton.addEventListener("click", buildStepsFlow);
+    nextStepButton.addEventListener("click", nextStep);
+    resetStepsButton.addEventListener("click", resetSteps);
     renderBars(parseNumbers(numbersInput.value));
+    renderStep();
   </script>
 </body>
 </html>

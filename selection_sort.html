@@ -11,7 +11,7 @@
     <section class="page-head glass">
       <a class="back-link" href="index.html">回首頁</a>
       <h1>Selection Sort</h1>
-      <p>每一輪從未排序區間中選出最小或最大值，再放到正確位置。這個版本提供同樣輸入介面，方便和其他排序法比較。</p>
+      <p>每一輪找出目前區間最小值（或最大值）並放到正確位置。可透過單步模式觀察「選最值」到「交換」的完整流程。</p>
     </section>
 
     <section class="workspace">
@@ -47,8 +47,28 @@
       </article>
 
       <aside class="preview-panel glass">
-        <h2>即時預覽</h2>
-        <p class="preview-note">條形圖長度會依排序後數值比例變化。</p>
+        <h2>原理與 Big-O</h2>
+        <p class="algo-info">Selection Sort 每輪只做一次最終交換，但要掃描剩餘區間找候選值，所以比較次數固定偏多。</p>
+        <div class="complexity-grid">
+          <div class="complexity-item"><span>最佳</span><strong>O(n^2)</strong></div>
+          <div class="complexity-item"><span>平均</span><strong>O(n^2)</strong></div>
+          <div class="complexity-item"><span>最差</span><strong>O(n^2)</strong></div>
+          <div class="complexity-item"><span>空間</span><strong>O(1)</strong></div>
+        </div>
+
+        <h2>單步模擬</h2>
+        <p class="preview-note">先產生步驟，再逐步看每輪如何更新候選最值與交換位置。</p>
+        <div class="step-controls">
+          <button class="primary" id="buildStepsButton">產生步驟</button>
+          <button class="secondary" id="nextStepButton">單步前進</button>
+          <button class="neutral" id="resetStepsButton">重置步驟</button>
+        </div>
+        <span class="step-index" id="stepIndexText">步驟 0 / 0</span>
+        <div class="step-box">
+          <p id="stepDescription">尚未建立步驟，請先按「產生步驟」。</p>
+          <p id="stepArray">目前陣列: -</p>
+        </div>
+
         <div class="iphone-wrap">
           <div class="iphone">
             <div class="iphone-screen">
@@ -74,6 +94,15 @@
     const resultText = document.getElementById("resultText");
     const barGrid = document.getElementById("barGrid");
     const orderTag = document.getElementById("orderTag");
+    const buildStepsButton = document.getElementById("buildStepsButton");
+    const nextStepButton = document.getElementById("nextStepButton");
+    const resetStepsButton = document.getElementById("resetStepsButton");
+    const stepIndexText = document.getElementById("stepIndexText");
+    const stepDescription = document.getElementById("stepDescription");
+    const stepArray = document.getElementById("stepArray");
+
+    let steps = [];
+    let stepCursor = -1;
 
     function parseNumbers(value) {
       return value
@@ -102,6 +131,61 @@
       return data;
     }
 
+    function buildSelectionSteps(values, order) {
+      const data = [...values];
+      const flow = [
+        {
+          description: "初始化：準備開始 Selection Sort。",
+          array: [...data]
+        }
+      ];
+
+      for (let index = 0; index < data.length; index += 1) {
+        let targetIndex = index;
+        flow.push({
+          description: `第 ${index + 1} 輪：先假設 index ${targetIndex} 是目標值。`,
+          array: [...data]
+        });
+
+        for (let cursor = index + 1; cursor < data.length; cursor += 1) {
+          flow.push({
+            description: `比較目前目標 ${data[targetIndex]} 與 index ${cursor} 的 ${data[cursor]}。`,
+            array: [...data]
+          });
+
+          if (compareValues(data[targetIndex], data[cursor], order) > 0) {
+            targetIndex = cursor;
+            flow.push({
+              description: `更新目標：新的候選位置為 index ${targetIndex}。`,
+              array: [...data]
+            });
+          }
+        }
+
+        if (targetIndex !== index) {
+          const left = data[index];
+          const right = data[targetIndex];
+          [data[index], data[targetIndex]] = [data[targetIndex], data[index]];
+          flow.push({
+            description: `交換 index ${index} (${left}) 與 index ${targetIndex} (${right})。`,
+            array: [...data]
+          });
+        } else {
+          flow.push({
+            description: `第 ${index + 1} 輪不需交換。`,
+            array: [...data]
+          });
+        }
+      }
+
+      flow.push({
+        description: "排序完成。",
+        array: [...data]
+      });
+
+      return flow;
+    }
+
     function renderBars(values) {
       if (values.length === 0) {
         barGrid.innerHTML = "";
@@ -119,6 +203,62 @@
           return `<div class="bar" style="width:${width}%"></div>`;
         })
         .join("");
+    }
+
+    function renderStep() {
+      if (steps.length === 0 || stepCursor < 0) {
+        stepIndexText.textContent = "步驟 0 / 0";
+        stepDescription.textContent = "尚未建立步驟，請先按「產生步驟」。";
+        stepArray.textContent = "目前陣列: -";
+        return;
+      }
+
+      const current = steps[stepCursor];
+      stepIndexText.textContent = `步驟 ${stepCursor + 1} / ${steps.length}`;
+      stepDescription.textContent = current.description;
+      stepArray.textContent = `目前陣列: ${current.array.join(", ")}`;
+      renderBars(current.array);
+    }
+
+    function buildStepsFlow() {
+      const rawValues = parseNumbers(numbersInput.value);
+      orderTag.textContent = orderSelect.value.toUpperCase();
+
+      if (rawValues.length === 0) {
+        steps = [];
+        stepCursor = -1;
+        renderStep();
+        resultText.textContent = "無法建立步驟：請先輸入有效數字。";
+        return;
+      }
+
+      steps = buildSelectionSteps(rawValues, orderSelect.value);
+      stepCursor = 0;
+      renderStep();
+      resultText.textContent = "已建立單步模擬流程，請按「單步前進」。";
+    }
+
+    function nextStep() {
+      if (steps.length === 0) {
+        buildStepsFlow();
+        return;
+      }
+
+      if (stepCursor < steps.length - 1) {
+        stepCursor += 1;
+        renderStep();
+        if (stepCursor === steps.length - 1) {
+          resultText.textContent = "單步模擬完成，你可以重置後重新觀察。";
+        }
+      }
+    }
+
+    function resetSteps() {
+      steps = [];
+      stepCursor = -1;
+      renderStep();
+      renderBars(parseNumbers(numbersInput.value));
+      resultText.textContent = "已重置單步模擬。";
     }
 
     function runSort() {
@@ -150,11 +290,18 @@
       timeValue.textContent = "0 ms";
       resultText.textContent = "已產生新範例，按下開始排序即可查看結果。";
       renderBars(sample);
+      steps = [];
+      stepCursor = -1;
+      renderStep();
     }
 
     sortButton.addEventListener("click", runSort);
     sampleButton.addEventListener("click", createSample);
+    buildStepsButton.addEventListener("click", buildStepsFlow);
+    nextStepButton.addEventListener("click", nextStep);
+    resetStepsButton.addEventListener("click", resetSteps);
     renderBars(parseNumbers(numbersInput.value));
+    renderStep();
   </script>
 </body>
 </html>

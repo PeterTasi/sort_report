@@ -11,7 +11,7 @@
     <section class="page-head glass">
       <a class="back-link" href="index.html">回首頁</a>
       <h1>Quick Sort</h1>
-      <p>透過 pivot 分割區間後遞迴排序，通常有很好的平均效能。這一頁可直接測試輸入資料與方向切換。</p>
+      <p>Quick Sort 透過 pivot 切分左右區間再遞迴處理。單步模式可觀察 partition 比較、交換與 pivot 歸位。</p>
     </section>
 
     <section class="workspace">
@@ -47,8 +47,28 @@
       </article>
 
       <aside class="preview-panel glass">
-        <h2>即時預覽</h2>
-        <p class="preview-note">條形圖長度會依排序後數值比例變化。</p>
+        <h2>原理與 Big-O</h2>
+        <p class="algo-info">Quick Sort 先選 pivot，把較小（或較大）元素移到一側，接著對左右子區間遞迴排序。</p>
+        <div class="complexity-grid">
+          <div class="complexity-item"><span>最佳</span><strong>O(n log n)</strong></div>
+          <div class="complexity-item"><span>平均</span><strong>O(n log n)</strong></div>
+          <div class="complexity-item"><span>最差</span><strong>O(n^2)</strong></div>
+          <div class="complexity-item"><span>空間</span><strong>O(log n)</strong></div>
+        </div>
+
+        <h2>單步模擬</h2>
+        <p class="preview-note">先建立步驟，再逐步看 pivot 分割與交換路徑。</p>
+        <div class="step-controls">
+          <button class="primary" id="buildStepsButton">產生步驟</button>
+          <button class="secondary" id="nextStepButton">單步前進</button>
+          <button class="neutral" id="resetStepsButton">重置步驟</button>
+        </div>
+        <span class="step-index" id="stepIndexText">步驟 0 / 0</span>
+        <div class="step-box">
+          <p id="stepDescription">尚未建立步驟，請先按「產生步驟」。</p>
+          <p id="stepArray">目前陣列: -</p>
+        </div>
+
         <div class="iphone-wrap">
           <div class="iphone">
             <div class="iphone-screen">
@@ -74,6 +94,15 @@
     const resultText = document.getElementById("resultText");
     const barGrid = document.getElementById("barGrid");
     const orderTag = document.getElementById("orderTag");
+    const buildStepsButton = document.getElementById("buildStepsButton");
+    const nextStepButton = document.getElementById("nextStepButton");
+    const resetStepsButton = document.getElementById("resetStepsButton");
+    const stepIndexText = document.getElementById("stepIndexText");
+    const stepDescription = document.getElementById("stepDescription");
+    const stepArray = document.getElementById("stepArray");
+
+    let steps = [];
+    let stepCursor = -1;
 
     function parseNumbers(value) {
       return value
@@ -108,6 +137,90 @@
       return [...quickSort(left, order), pivot, ...quickSort(right, order)];
     }
 
+    function buildQuickSteps(values, order) {
+      const data = [...values];
+      const flow = [
+        {
+          description: "初始化：準備開始 Quick Sort。",
+          array: [...data]
+        }
+      ];
+
+      function partition(low, high) {
+        const pivot = data[high];
+        flow.push({
+          description: `選擇 pivot = ${pivot}（index ${high}），處理區間 [${low}, ${high}]。`,
+          array: [...data]
+        });
+
+        let boundary = low - 1;
+        for (let cursor = low; cursor < high; cursor += 1) {
+          flow.push({
+            description: `比較 index ${cursor} 的 ${data[cursor]} 與 pivot ${pivot}。`,
+            array: [...data]
+          });
+
+          if (compareValues(data[cursor], pivot, order) < 0) {
+            boundary += 1;
+            if (boundary !== cursor) {
+              const left = data[boundary];
+              const right = data[cursor];
+              [data[boundary], data[cursor]] = [data[cursor], data[boundary]];
+              flow.push({
+                description: `將 ${right} 移到左側區塊，與 ${left} 交換。`,
+                array: [...data]
+              });
+            } else {
+              flow.push({
+                description: "元素屬於左側區塊，位置不變。",
+                array: [...data]
+              });
+            }
+          }
+        }
+
+        if (boundary + 1 !== high) {
+          const left = data[boundary + 1];
+          const right = data[high];
+          [data[boundary + 1], data[high]] = [data[high], data[boundary + 1]];
+          flow.push({
+            description: `pivot 歸位：交換 ${left} 與 ${right}。`,
+            array: [...data]
+          });
+        }
+
+        flow.push({
+          description: `pivot 已固定在 index ${boundary + 1}。`,
+          array: [...data]
+        });
+        return boundary + 1;
+      }
+
+      function solve(low, high) {
+        if (low >= high) {
+          if (low === high) {
+            flow.push({
+              description: `區間 [${low}, ${high}] 只剩一個元素，視為完成。`,
+              array: [...data]
+            });
+          }
+          return;
+        }
+
+        const pivotIndex = partition(low, high);
+        solve(low, pivotIndex - 1);
+        solve(pivotIndex + 1, high);
+      }
+
+      solve(0, data.length - 1);
+      flow.push({
+        description: "排序完成。",
+        array: [...data]
+      });
+
+      return flow;
+    }
+
     function renderBars(values) {
       if (values.length === 0) {
         barGrid.innerHTML = "";
@@ -125,6 +238,62 @@
           return `<div class="bar" style="width:${width}%"></div>`;
         })
         .join("");
+    }
+
+    function renderStep() {
+      if (steps.length === 0 || stepCursor < 0) {
+        stepIndexText.textContent = "步驟 0 / 0";
+        stepDescription.textContent = "尚未建立步驟，請先按「產生步驟」。";
+        stepArray.textContent = "目前陣列: -";
+        return;
+      }
+
+      const current = steps[stepCursor];
+      stepIndexText.textContent = `步驟 ${stepCursor + 1} / ${steps.length}`;
+      stepDescription.textContent = current.description;
+      stepArray.textContent = `目前陣列: ${current.array.join(", ")}`;
+      renderBars(current.array);
+    }
+
+    function buildStepsFlow() {
+      const rawValues = parseNumbers(numbersInput.value);
+      orderTag.textContent = orderSelect.value.toUpperCase();
+
+      if (rawValues.length === 0) {
+        steps = [];
+        stepCursor = -1;
+        renderStep();
+        resultText.textContent = "無法建立步驟：請先輸入有效數字。";
+        return;
+      }
+
+      steps = buildQuickSteps(rawValues, orderSelect.value);
+      stepCursor = 0;
+      renderStep();
+      resultText.textContent = "已建立單步模擬流程，請按「單步前進」。";
+    }
+
+    function nextStep() {
+      if (steps.length === 0) {
+        buildStepsFlow();
+        return;
+      }
+
+      if (stepCursor < steps.length - 1) {
+        stepCursor += 1;
+        renderStep();
+        if (stepCursor === steps.length - 1) {
+          resultText.textContent = "單步模擬完成，你可以重置後重新觀察。";
+        }
+      }
+    }
+
+    function resetSteps() {
+      steps = [];
+      stepCursor = -1;
+      renderStep();
+      renderBars(parseNumbers(numbersInput.value));
+      resultText.textContent = "已重置單步模擬。";
     }
 
     function runSort() {
@@ -156,11 +325,18 @@
       timeValue.textContent = "0 ms";
       resultText.textContent = "已產生新範例，按下開始排序即可查看結果。";
       renderBars(sample);
+      steps = [];
+      stepCursor = -1;
+      renderStep();
     }
 
     sortButton.addEventListener("click", runSort);
     sampleButton.addEventListener("click", createSample);
+    buildStepsButton.addEventListener("click", buildStepsFlow);
+    nextStepButton.addEventListener("click", nextStep);
+    resetStepsButton.addEventListener("click", resetSteps);
     renderBars(parseNumbers(numbersInput.value));
+    renderStep();
   </script>
 </body>
 </html>
