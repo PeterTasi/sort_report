@@ -90,6 +90,28 @@
       </div>
     </section>
 
+    <section class="glass panel ai-panel" id="ai-qa">
+      <h2>AI 助教問答</h2>
+      <p class="ai-subtitle">輸入你對排序法的問題，系統會透過雲端模型回覆重點，適合課堂展示與報告互動。</p>
+
+      <div class="ai-layout">
+        <div>
+          <label class="label" for="aiQuestion">你的問題</label>
+          <textarea id="aiQuestion" placeholder="例如：Quick Sort 為什麼平均是 O(n log n)？最差情況怎麼發生？"></textarea>
+          <div class="actions">
+            <button class="primary" id="askAiBtn" type="button">送出問題</button>
+            <button class="secondary" id="clearAiBtn" type="button">清空</button>
+          </div>
+          <p class="ai-hint">提示：請先啟動後端 API（Node.js），否則前端無法取得 AI 回覆。</p>
+        </div>
+
+        <div class="ai-answer-wrap">
+          <p class="ai-answer-title">AI 回覆</p>
+          <div id="aiAnswer" class="ai-answer">尚未提問，請先輸入問題。</div>
+        </div>
+      </div>
+    </section>
+
     <section class="glass panel" id="compare">
       <h2>選擇排序法入口</h2>
       <div class="home-grid">
@@ -163,5 +185,7 @@
       </div>
     </section>
   </main>
+
+  <script src="ai-assistant.js"></script>
 </body>
 </html>
