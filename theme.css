@@ -277,6 +277,18 @@ a {
   color: #475569;
 }
 
+.ai-mode {
+  margin: 10px 0 0;
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 118, 110, 0.26);
+  background: rgba(15, 118, 110, 0.12);
+  color: #115e59;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
 .ai-answer-wrap {
   border-radius: var(--radius-lg);
   border: 1px solid var(--line);

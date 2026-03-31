@@ -9,7 +9,8 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 const AI_MODE = (process.env.AI_MODE || "rule").toLowerCase();
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434";
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "qwen2.5:7b-instruct";
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "deepseek-r1:8b";
+const OLLAMA_TIMEOUT_MS = Number(process.env.OLLAMA_TIMEOUT_MS || 25000);
 
 function buildRuleBasedAnswer(questionText) {
   const q = questionText.toLowerCase();
@@ -93,17 +94,31 @@ async function getCloudAnswer(question) {
 }
 
 async function getOllamaAnswer(question) {
-  const response = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: OLLAMA_MODEL,
-      stream: false,
-      prompt: `你是排序法課堂助教，請用繁體中文回答且內容精簡，適合期中報告口頭說明。\n\n問題：${question}`
-    })
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), OLLAMA_TIMEOUT_MS);
+
+  let response;
+  try {
+    response = await fetch(`${OLLAMA_BASE_URL}/api/generate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: OLLAMA_MODEL,
+        stream: false,
+        prompt: `你是排序法課堂助教，請用繁體中文回答且內容精簡，適合期中報告口頭說明。\n\n問題：${question}`
+      }),
+      signal: controller.signal
+    });
+  } catch (error) {
+    if (error.name === "AbortError") {
+      throw new Error(`本地模型逾時（>${OLLAMA_TIMEOUT_MS}ms）`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     const detail = await response.text();
@@ -122,6 +137,15 @@ async function getOllamaAnswer(question) {
 
 app.use(express.json());
 app.use(express.static("."));
+
+app.get("/api/health", (_req, res) => {
+  return res.json({
+    ok: true,
+    mode: AI_MODE,
+    ollamaModel: OLLAMA_MODEL,
+    port: Number(PORT)
+  });
+});
 
 app.post("/api/ask", async (req, res) => {
   const question = (req.body?.question || "").trim();

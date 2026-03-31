@@ -1,74 +1,104 @@
 # sort_report
 
-Sorting demo page for common sorting algorithms, now with AI Q&A support.
+Interactive sorting report site with AI Q&A support.
 
 GitHub Pages URL:
 https://petertasi.github.io/sort_report/
 
-## Local run (with AI backend)
+## Project structure
 
-1. Install dependencies:
+- `index.html`: home page + AI Q&A panel
+- `quick_sort.html`, `bubble_sort.html`, `selection_sort.html`, `insertion_sort.html`: sorting demos
+- `theme.css`: shared style
+- `ai-assistant.js`: frontend Q&A logic
+- `server.js`: backend API (`/api/ask`, `/api/health`)
+
+## Quick start
+
+1. Install dependencies
 
 ```bash
 npm install
 ```
 
-2. Create environment file:
+2. Create environment file
 
 ```bash
 cp .env.example .env
 ```
 
-3. Edit `.env` and choose AI mode:
+3. Start server
+
+```bash
+npm start
+```
+
+4. Open browser
+
+http://localhost:3000
+
+## AI modes
+
+Configure `.env`:
 
 ```env
 AI_MODE=local
 OLLAMA_BASE_URL=http://127.0.0.1:11434
-OLLAMA_MODEL=qwen2.5:7b-instruct
+OLLAMA_MODEL=deepseek-r1:8b
+OLLAMA_TIMEOUT_MS=25000
 OPENAI_API_KEY=sk-your-real-key
 OPENAI_MODEL=gpt-4.1-mini
 PORT=3000
 ```
 
-- `AI_MODE=local` (recommended for your demo): use local Ollama model, no API cost.
-- `AI_MODE=rule`: free rule-based assistant, no API cost.
-- `AI_MODE=cloud`: use OpenAI API (paid by usage).
+- `AI_MODE=local`: use local Ollama model (no API cost)
+- `AI_MODE=rule`: use free rule-based assistant
+- `AI_MODE=cloud`: use OpenAI API (paid)
 
 ## Ollama quick setup (macOS)
 
-1. Install Ollama:
+1. Install Ollama
 
 ```bash
 brew install --cask ollama
 ```
 
-2. Start Ollama app once, then pull a model:
+2. Start Ollama app, then pull model
 
 ```bash
-ollama pull qwen2.5:7b-instruct
+ollama pull deepseek-r1:8b
 ```
 
-3. Keep Ollama running and then start this project:
+3. Verify model installed
 
 ```bash
-npm start
+ollama list
 ```
 
-If local model is temporarily unavailable, backend will auto fallback to rule mode.
+If local model is temporarily unavailable, backend auto-fallbacks to `rule-fallback`.
 
-4. Start server:
+## API endpoints
 
-```bash
-npm start
-```
+- `POST /api/ask`
+- `GET /api/health`
 
-5. Open in browser:
+## School demo checklist
 
-http://localhost:3000
+1. Keep Ollama app open
+2. Confirm mode badge on home page shows local/rule-fallback
+3. Prepare 2-3 pre-defined questions for stable demo flow
+
+## Troubleshooting
+
+- `EADDRINUSE: 3000`
+	- kill previous process: `lsof -nP -iTCP:3000 -sTCP:LISTEN` then `kill <PID>`
+- `mode: rule-fallback`
+	- local model service unavailable or model name mismatch
+	- check `ollama ps` and `ollama list`
+- `insufficient_quota`
+	- cloud mode quota issue, switch to local/rule mode
 
 ## Notes for school demo
 
-- The API key is only used on backend (`server.js`) and is not exposed in frontend.
-- For stable demos, use `AI_MODE=local`; if local model fails, it auto-fallbacks to rule mode.
-- In the home page AI panel, press Ctrl+Enter (or Cmd+Enter on macOS) to send question quickly.
-- If backend is not running or `.env` is missing, AI panel will show a clear error message.
+- API key is only used on backend and should never be committed.
+- In home page AI panel, press Cmd+Enter (or Ctrl+Enter) for quick submit.

@@ -92,7 +92,7 @@
 
     <section class="glass panel ai-panel" id="ai-qa">
       <h2>AI 助教問答</h2>
-      <p class="ai-subtitle">輸入你對排序法的問題，系統會透過雲端模型回覆重點，適合課堂展示與報告互動。</p>
+      <p class="ai-subtitle">輸入你對排序法的問題，系統會使用本地模型、規則模式或雲端模型回覆重點，適合課堂展示與報告互動。</p>
 
       <div class="ai-layout">
         <div>
@@ -102,6 +102,7 @@
             <button class="primary" id="askAiBtn" type="button">送出問題</button>
             <button class="secondary" id="clearAiBtn" type="button">清空</button>
           </div>
+          <p class="ai-mode" id="aiModeBadge">目前模式：未偵測</p>
           <p class="ai-hint">提示：請先啟動後端 API（Node.js），否則前端無法取得 AI 回覆。</p>
         </div>
 

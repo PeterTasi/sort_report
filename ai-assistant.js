@@ -2,6 +2,35 @@ const askButton = document.getElementById("askAiBtn");
 const clearButton = document.getElementById("clearAiBtn");
 const questionInput = document.getElementById("aiQuestion");
 const answerBox = document.getElementById("aiAnswer");
+const modeBadge = document.getElementById("aiModeBadge");
+
+function modeToLabel(mode) {
+  if (mode === "local") {
+    return "本地模型 (Ollama)";
+  }
+
+  if (mode === "rule") {
+    return "規則模式 (免費)";
+  }
+
+  if (mode === "rule-fallback") {
+    return "規則備援 (本地模型暫不可用)";
+  }
+
+  if (mode === "cloud") {
+    return "雲端模型 (API)";
+  }
+
+  return "未偵測";
+}
+
+function setMode(mode) {
+  if (!modeBadge) {
+    return;
+  }
+
+  modeBadge.textContent = `目前模式：${modeToLabel(mode)}`;
+}
 
 function setAnswer(message, state) {
   answerBox.textContent = message;
@@ -38,6 +67,7 @@ async function askAi() {
     }
 
     setAnswer(result.answer || "目前沒有回覆內容，請稍後再試。", "is-success");
+    setMode(result.mode);
   } catch (error) {
     setAnswer(`發生錯誤：${error.message}`, "is-error");
   } finally {
@@ -45,7 +75,23 @@ async function askAi() {
   }
 }
 
+async function initHealthStatus() {
+  try {
+    const response = await fetch("/api/health");
+    if (!response.ok) {
+      return;
+    }
+
+    const status = await response.json();
+    setMode(status.mode);
+  } catch (_error) {
+    // Keep UI usable even when backend is not yet ready.
+  }
+}
+
 if (askButton && clearButton && questionInput && answerBox) {
+  initHealthStatus();
+
   askButton.addEventListener("click", askAi);
   clearButton.addEventListener("click", () => {
     questionInput.value = "";
@@ -54,6 +100,16 @@ if (askButton && clearButton && questionInput && answerBox) {
   });
 
   questionInput.addEventListener("keydown", (event) => {
+    if (event.isComposing) {
+      return;
+    }
+
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      askAi();
+      return;
+    }
+
     if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
       askAi();
     }
