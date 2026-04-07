@@ -155,53 +155,317 @@
       </div>
 
       <div class="compare-table-wrap">
-        <h3>快速比較表</h3>
+        <h3>完整複雜度比較表</h3>
         <table class="compare-table">
           <thead>
             <tr>
               <th>演算法</th>
-              <th>平均時間複雜度</th>
-              <th>特性</th>
-              <th>建議情境</th>
+              <th>最佳時間</th>
+              <th>平均時間</th>
+              <th>最差時間</th>
+              <th>空間複雜度</th>
+              <th>穩定性</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Quick Sort</td>
+              <td><strong>Bubble Sort</strong></td>
+              <td class="complexity-best">O(n)</td>
+              <td>O(n²)</td>
+              <td class="complexity-worst">O(n²)</td>
+              <td>O(1)</td>
+              <td><span class="badge-stable">穩定 ✓</span></td>
+            </tr>
+            <tr>
+              <td><strong>Selection Sort</strong></td>
+              <td class="complexity-best">O(n²)</td>
+              <td>O(n²)</td>
+              <td class="complexity-worst">O(n²)</td>
+              <td>O(1)</td>
+              <td><span class="badge-unstable">不穩定 ✗</span></td>
+            </tr>
+            <tr>
+              <td><strong>Insertion Sort</strong></td>
+              <td class="complexity-best">O(n)</td>
+              <td>O(n²)</td>
+              <td class="complexity-worst">O(n²)</td>
+              <td>O(1)</td>
+              <td><span class="badge-stable">穩定 ✓</span></td>
+            </tr>
+            <tr>
+              <td><strong>Quick Sort</strong></td>
+              <td class="complexity-best">O(n log n)</td>
               <td>O(n log n)</td>
-              <td>分治遞迴、平均效能佳</td>
-              <td>一般資料量中大型的排序展示</td>
+              <td class="complexity-worst">O(n²)</td>
+              <td>O(log n)</td>
+              <td><span class="badge-unstable">不穩定 ✗</span></td>
             </tr>
             <tr>
-              <td>Bubble Sort</td>
-              <td>O(n^2)</td>
-              <td>相鄰交換、流程直觀</td>
-              <td>課堂講解交換概念與流程觀察</td>
-            </tr>
-            <tr>
-              <td>Selection Sort</td>
-              <td>O(n^2)</td>
-              <td>每輪選最值、交換次數少</td>
-              <td>理解「搜尋目標值」型流程</td>
-            </tr>
-            <tr>
-              <td>Insertion Sort</td>
-              <td>O(n^2)</td>
-              <td>插入已排序區間</td>
-              <td>小型資料或接近有序資料示範</td>
-            </tr>
-            <tr>
-              <td>Merge Sort</td>
+              <td><strong>Merge Sort</strong></td>
+              <td class="complexity-best">O(n log n)</td>
               <td>O(n log n)</td>
-              <td>分治合併、複雜度穩定</td>
-              <td>需穩定排序或最差情況保證展示</td>
+              <td class="complexity-worst">O(n log n)</td>
+              <td>O(n)</td>
+              <td><span class="badge-stable">穩定 ✓</span></td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
+
+    <section class="glass panel" id="benchmark">
+      <h2>數據模擬</h2>
+      <p class="section-desc">以 JavaScript 實作五種排序法，對不同資料量各執行 3 次計時後取平均，觀察排序時間隨 n 增加的變化。</p>
+      <div class="bench-meta-grid">
+        <div class="bench-meta-item">
+          <span>測試規模 n</span>
+          <strong>100 / 500 / 1,000 / 5,000 / 10,000</strong>
+        </div>
+        <div class="bench-meta-item">
+          <span>每組執行次數</span>
+          <strong>3 次取平均</strong>
+        </div>
+        <div class="bench-meta-item">
+          <span>資料型態</span>
+          <strong>隨機整數陣列</strong>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="primary" id="runBenchmarkBtn" type="button">執行模擬</button>
+      </div>
+      <p id="benchmarkStatus" class="bench-status"></p>
+      <div id="benchmarkTableWrap"></div>
+      <div class="bench-chart-wrap">
+        <canvas id="benchmarkChart"></canvas>
+      </div>
+    </section>
+
+    <section class="glass panel" id="conclusion">
+      <h2>心得與結論</h2>
+      <p class="section-desc">根據理論複雜度與上方模擬實驗結果，整理出以下觀察與建議。</p>
+      <div class="conclusion-grid">
+        <article class="conclusion-item">
+          <h3>O(n²) 的成長代價</h3>
+          <p>Bubble、Selection、Insertion Sort 理論複雜度相同，但模擬結果顯示，當 n 從 1,000 增至 10,000，執行時間約增加 100 倍，與 O(n²) 預測完全吻合。大型資料集應避免使用此類演算法。</p>
+        </article>
+        <article class="conclusion-item">
+          <h3>Quick Sort 實務優勢</h3>
+          <p>Quick Sort 平均複雜度 O(n log n)，在隨機資料下表現最快，原因是常數因子小且快取命中率高。但最差情況（pivot 選擇不當）會退化到 O(n²)，因此 pivot 策略是關鍵。</p>
+        </article>
+        <article class="conclusion-item">
+          <h3>Merge Sort 的穩定性</h3>
+          <p>Merge Sort 無論資料分布如何，時間複雜度恆為 O(n log n)，並為穩定排序，適合需要保留相等元素順序的場景（如多欄位排序）。代價是需要 O(n) 額外空間。</p>
+        </article>
+        <article class="conclusion-item">
+          <h3>Insertion Sort 的特殊情境</h3>
+          <p>在小型資料（n &lt; 20）或資料幾乎已排序的情況下，Insertion Sort 最佳複雜度為 O(n)，實際執行速度有時甚至優於 Quick Sort，因為其 overhead 極小。</p>
+        </article>
+      </div>
+      <div class="conclusion-summary">
+        <h3>綜合建議</h3>
+        <p>一般用途首選 <strong>Quick Sort</strong>（速度快）或 <strong>Merge Sort</strong>（穩定可預期）。資料量小或接近有序時可考慮 <strong>Insertion Sort</strong>。<strong>Bubble Sort</strong> 與 <strong>Selection Sort</strong> 適合教學展示，不建議用於實際大型資料排序。</p>
+      </div>
+    </section>
   </main>
 
   <script src="ai-assistant.js"></script>
+  <script>
+  (function () {
+    const SIZES = [100, 500, 1000, 5000, 10000];
+    const RUNS = 3;
+    const ALGOS = [
+      { name: "Bubble Sort",     color: "#ef4444", fn: bubbleSort },
+      { name: "Selection Sort",  color: "#f97316", fn: selectionSort },
+      { name: "Insertion Sort",  color: "#eab308", fn: insertionSort },
+      { name: "Quick Sort",      color: "#22c55e", fn: quickSort },
+      { name: "Merge Sort",      color: "#3b82f6", fn: mergeSort }
+    ];
+
+    function genArr(n) {
+      return Array.from({ length: n }, () => (Math.random() * n * 10) | 0);
+    }
+
+    function bubbleSort(arr) {
+      const a = arr.slice(), n = a.length;
+      for (let i = 0; i < n - 1; i++) {
+        let swapped = false;
+        for (let j = 0; j < n - 1 - i; j++) {
+          if (a[j] > a[j + 1]) { const t = a[j]; a[j] = a[j+1]; a[j+1] = t; swapped = true; }
+        }
+        if (!swapped) break;
+      }
+    }
+
+    function selectionSort(arr) {
+      const a = arr.slice(), n = a.length;
+      for (let i = 0; i < n - 1; i++) {
+        let m = i;
+        for (let j = i + 1; j < n; j++) if (a[j] < a[m]) m = j;
+        if (m !== i) { const t = a[i]; a[i] = a[m]; a[m] = t; }
+      }
+    }
+
+    function insertionSort(arr) {
+      const a = arr.slice(), n = a.length;
+      for (let i = 1; i < n; i++) {
+        const k = a[i]; let j = i - 1;
+        while (j >= 0 && a[j] > k) { a[j + 1] = a[j]; j--; }
+        a[j + 1] = k;
+      }
+    }
+
+    function quickSort(arr) {
+      const a = arr.slice();
+      (function qs(lo, hi) {
+        if (lo >= hi) return;
+        const p = a[hi]; let i = lo - 1;
+        for (let j = lo; j < hi; j++) {
+          if (a[j] <= p) { i++; const t = a[i]; a[i] = a[j]; a[j] = t; }
+        }
+        i++; const t = a[i]; a[i] = a[hi]; a[hi] = t;
+        qs(lo, i - 1); qs(i + 1, hi);
+      })(0, a.length - 1);
+    }
+
+    function mergeSort(arr) {
+      function ms(a) {
+        if (a.length <= 1) return a;
+        const m = a.length >> 1;
+        const L = ms(a.slice(0, m)), R = ms(a.slice(m));
+        const out = []; let i = 0, j = 0;
+        while (i < L.length && j < R.length) out.push(L[i] <= R[j] ? L[i++] : R[j++]);
+        return out.concat(L.slice(i), R.slice(j));
+      }
+      ms(arr.slice());
+    }
+
+    async function runBenchmark() {
+      const btn = document.getElementById("runBenchmarkBtn");
+      const status = document.getElementById("benchmarkStatus");
+      const wrap = document.getElementById("benchmarkTableWrap");
+      btn.disabled = true;
+      wrap.innerHTML = "";
+      status.textContent = "執行中，請稍候…";
+
+      const results = ALGOS.map(() => new Array(SIZES.length).fill(0));
+
+      for (let si = 0; si < SIZES.length; si++) {
+        const n = SIZES[si];
+        for (let ai = 0; ai < ALGOS.length; ai++) {
+          let total = 0;
+          for (let r = 0; r < RUNS; r++) {
+            const arr = genArr(n);
+            const t0 = performance.now();
+            ALGOS[ai].fn(arr);
+            total += performance.now() - t0;
+            await new Promise(res => setTimeout(res, 0));
+          }
+          results[ai][si] = total / RUNS;
+        }
+        status.textContent = "進度：" + (si + 1) + " / " + SIZES.length + " 組完成";
+      }
+
+      let html = '<div class="compare-table-wrap"><table class="compare-table bench-result-table"><thead><tr><th>演算法</th>';
+      for (const n of SIZES) html += "<th>n = " + n.toLocaleString() + "</th>";
+      html += "</tr></thead><tbody>";
+      for (let ai = 0; ai < ALGOS.length; ai++) {
+        html += "<tr><td style='font-weight:700'>" + ALGOS[ai].name + "</td>";
+        for (let si = 0; si < SIZES.length; si++) {
+          html += "<td>" + results[ai][si].toFixed(3) + " ms</td>";
+        }
+        html += "</tr>";
+      }
+      html += "</tbody></table></div>";
+      wrap.innerHTML = html;
+
+      drawChart(results);
+      status.textContent = "模擬完成。";
+      btn.disabled = false;
+    }
+
+    function drawChart(results) {
+      const canvas = document.getElementById("benchmarkChart");
+      if (!canvas) return;
+      const dpr = window.devicePixelRatio || 1;
+      const W = canvas.parentElement.clientWidth || 860;
+      const H = 380;
+      canvas.style.width = W + "px";
+      canvas.style.height = H + "px";
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      const ctx = canvas.getContext("2d");
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, W, H);
+
+      const pad = { top: 28, right: 24, bottom: 72, left: 80 };
+      const cW = W - pad.left - pad.right;
+      const cH = H - pad.top - pad.bottom;
+
+      let maxVal = 0;
+      for (const row of results) for (const v of row) if (v > maxVal) maxVal = v;
+      maxVal = Math.ceil(maxVal * 1.15) || 1;
+
+      const nG = SIZES.length, nA = ALGOS.length;
+      const gW = cW / nG;
+      const bW = gW / (nA + 1.5);
+
+      ctx.strokeStyle = "rgba(100,116,139,0.18)";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      ctx.fillStyle = "#64748b";
+      ctx.font = "11px monospace";
+      ctx.textAlign = "right";
+      const yTicks = 5;
+      for (let i = 0; i <= yTicks; i++) {
+        const val = maxVal * i / yTicks;
+        const y = pad.top + cH - cH * i / yTicks;
+        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cW, y); ctx.stroke();
+        ctx.fillText(val.toFixed(2) + "ms", pad.left - 6, y + 4);
+      }
+      ctx.setLineDash([]);
+
+      ctx.strokeStyle = "rgba(100,116,139,0.5)";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(pad.left, pad.top);
+      ctx.lineTo(pad.left, pad.top + cH);
+      ctx.lineTo(pad.left + cW, pad.top + cH);
+      ctx.stroke();
+
+      for (let si = 0; si < nG; si++) {
+        const gX = pad.left + si * gW + bW * 0.4;
+        for (let ai = 0; ai < nA; ai++) {
+          const val = results[ai][si];
+          const bH = (val / maxVal) * cH;
+          const x = gX + ai * bW;
+          const y = pad.top + cH - bH;
+          ctx.fillStyle = ALGOS[ai].color;
+          ctx.fillRect(x, y, bW * 0.82, bH);
+        }
+        ctx.fillStyle = "#475569";
+        ctx.textAlign = "center";
+        ctx.font = "11px monospace";
+        ctx.fillText("n=" + SIZES[si].toLocaleString(), gX + (nA * bW) / 2, pad.top + cH + 18);
+      }
+
+      const legW = cW / nA;
+      ctx.font = "11px 'Space Grotesk', sans-serif";
+      for (let ai = 0; ai < nA; ai++) {
+        const lx = pad.left + ai * legW;
+        const ly = H - 16;
+        ctx.fillStyle = ALGOS[ai].color;
+        ctx.fillRect(lx, ly - 10, 12, 12);
+        ctx.fillStyle = "#334155";
+        ctx.textAlign = "left";
+        ctx.fillText(ALGOS[ai].name, lx + 16, ly);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const btn = document.getElementById("runBenchmarkBtn");
+      if (btn) btn.addEventListener("click", runBenchmark);
+    });
+  })();
+  </script>
 </body>
 </html>
