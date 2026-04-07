@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bubble Sort Lab</title>
+  <title>Merge Sort Lab</title>
   <link rel="stylesheet" href="theme.css">
 </head>
 <body>
@@ -14,21 +14,21 @@
       <div class="top-links">
         <a href="index.html">首頁</a>
         <a href="quick_sort.html">Quick</a>
-        <a class="active" href="bubble_sort.html">Bubble</a>
+        <a href="bubble_sort.html">Bubble</a>
         <a href="selection_sort.html">Selection</a>
         <a href="insertion_sort.html">Insertion</a>
-        <a href="merge_sort.html">Merge</a>
+        <a class="active" href="merge_sort.html">Merge</a>
       </div>
     </section>
 
     <section class="page-head glass">
       <a class="back-link" href="index.html">回首頁</a>
-      <h1>Bubble Sort</h1>
-      <p>以相鄰交換的方式逐步完成排序。你可以先一般排序，再用「單步前進」觀察每一次比較是否觸發交換。</p>
+      <h1>Merge Sort</h1>
+      <p>分治法，將陣列不斷對半切割至單元素，再逐層合併成有序結果。單步模式可觀察切割與合併的完整過程。</p>
       <div class="page-hero-meta">
-        <span>平均時間複雜度 O(n^2)</span>
-        <span>空間複雜度 O(1)</span>
-        <span>適合入門教學</span>
+        <span>平均時間複雜度 O(n log n)</span>
+        <span>空間複雜度 O(n)</span>
+        <span>穩定排序、複雜度不受資料影響</span>
       </div>
     </section>
 
@@ -36,25 +36,25 @@
       <h2>演算法快速切換</h2>
       <div class="quick-switch-links">
         <a href="quick_sort.html">Quick Sort</a>
-        <a class="active" href="bubble_sort.html">Bubble Sort</a>
+        <a href="bubble_sort.html">Bubble Sort</a>
         <a href="selection_sort.html">Selection Sort</a>
         <a href="insertion_sort.html">Insertion Sort</a>
-        <a href="merge_sort.html">Merge Sort</a>
+        <a class="active" href="merge_sort.html">Merge Sort</a>
       </div>
     </section>
 
     <section class="highlight-strip">
       <article class="highlight-card glass">
-        <span>比較策略</span>
-        <strong>相鄰元素兩兩比較</strong>
+        <span>分治策略</span>
+        <strong>對半切割至單元素</strong>
       </article>
       <article class="highlight-card glass">
-        <span>交換行為</span>
-        <strong>若順序錯誤就交換</strong>
+        <span>合併行為</span>
+        <strong>逐層比較並合併有序子陣列</strong>
       </article>
       <article class="highlight-card glass">
         <span>觀察重點</span>
-        <strong>每輪把一個最值推到尾端</strong>
+        <strong>複雜度穩定不受資料分布影響</strong>
       </article>
     </section>
 
@@ -92,16 +92,16 @@
 
       <aside class="preview-panel glass">
         <h2>原理與 Big-O</h2>
-        <p class="algo-info">Bubble Sort 會在每一輪把較大值（或較小值）慢慢推到序列尾端，因此需要重複多輪相鄰比較與交換。</p>
+        <p class="algo-info">Merge Sort 採分治法，將陣列對半拆分直到每個子陣列只有一個元素，再逐層比較合併。時間複雜度不受資料分布影響，穩定維持 O(n log n)。</p>
         <div class="complexity-grid">
-          <div class="complexity-item"><span>最佳</span><strong>O(n)</strong></div>
-          <div class="complexity-item"><span>平均</span><strong>O(n^2)</strong></div>
-          <div class="complexity-item"><span>最差</span><strong>O(n^2)</strong></div>
-          <div class="complexity-item"><span>空間</span><strong>O(1)</strong></div>
+          <div class="complexity-item"><span>最佳</span><strong>O(n log n)</strong></div>
+          <div class="complexity-item"><span>平均</span><strong>O(n log n)</strong></div>
+          <div class="complexity-item"><span>最差</span><strong>O(n log n)</strong></div>
+          <div class="complexity-item"><span>空間</span><strong>O(n)</strong></div>
         </div>
 
         <h2>單步模擬</h2>
-        <p class="preview-note">先按「產生步驟」，再按「單步前進」觀看每次比較與交換。</p>
+        <p class="preview-note">先按「產生步驟」，再按「單步前進」觀看切割與合併流程。</p>
         <div class="step-controls">
           <button class="primary" id="buildStepsButton">產生步驟</button>
           <button class="secondary" id="nextStepButton">單步前進</button>
@@ -117,7 +117,7 @@
           <div class="iphone">
             <div class="iphone-screen">
               <div class="phone-chip-row">
-                <span class="phone-chip">Bubble</span>
+                <span class="phone-chip">Merge</span>
                 <span class="phone-chip" id="orderTag">ASC</span>
               </div>
               <div class="bar-grid" id="barGrid"></div>
@@ -161,66 +161,73 @@
       return order === "asc" ? left - right : right - left;
     }
 
-    function bubbleSort(values, order) {
-      const data = [...values];
-      for (let outer = 0; outer < data.length - 1; outer += 1) {
-        for (let inner = 0; inner < data.length - outer - 1; inner += 1) {
-          if (compareValues(data[inner], data[inner + 1], order) > 0) {
-            [data[inner], data[inner + 1]] = [data[inner + 1], data[inner]];
-          }
+    function mergeArrays(left, right, order) {
+      const result = [];
+      let i = 0;
+      let j = 0;
+      while (i < left.length && j < right.length) {
+        if (compareValues(left[i], right[j], order) <= 0) {
+          result.push(left[i]);
+          i += 1;
+        } else {
+          result.push(right[j]);
+          j += 1;
         }
       }
-      return data;
+      return [...result, ...left.slice(i), ...right.slice(j)];
     }
 
-    function buildBubbleSteps(values, order) {
-      const data = [...values];
+    function mergeSort(values, order) {
+      if (values.length <= 1) return [...values];
+      const mid = Math.floor(values.length / 2);
+      const left = mergeSort(values.slice(0, mid), order);
+      const right = mergeSort(values.slice(mid), order);
+      return mergeArrays(left, right, order);
+    }
+
+    function buildMergeSteps(values, order) {
       const flow = [
         {
-          description: "初始化：準備開始 Bubble Sort。",
-          array: [...data]
+          description: "初始化：準備開始 Merge Sort。",
+          array: [...values]
         }
       ];
 
-      for (let outer = 0; outer < data.length - 1; outer += 1) {
-        flow.push({
-          description: `第 ${outer + 1} 輪開始：比較相鄰元素。`,
-          array: [...data]
-        });
+      function sortSteps(arr) {
+        if (arr.length <= 1) return [...arr];
 
-        for (let inner = 0; inner < data.length - outer - 1; inner += 1) {
-          const left = data[inner];
-          const right = data[inner + 1];
-          const shouldSwap = compareValues(left, right, order) > 0;
-
-          flow.push({
-            description: `比較 index ${inner} (${left}) 與 index ${inner + 1} (${right})。`,
-            array: [...data]
-          });
-
-          if (shouldSwap) {
-            [data[inner], data[inner + 1]] = [data[inner + 1], data[inner]];
-            flow.push({
-              description: `發生交換：${left} 與 ${right} 對調。`,
-              array: [...data]
-            });
-          } else {
-            flow.push({
-              description: "不需交換：順序已符合目前排序方向。",
-              array: [...data]
-            });
-          }
-        }
+        const mid = Math.floor(arr.length / 2);
+        const left = arr.slice(0, mid);
+        const right = arr.slice(mid);
 
         flow.push({
-          description: `第 ${outer + 1} 輪完成。`,
-          array: [...data]
+          description: `切分 [${arr.join(", ")}] → 左半 [${left.join(", ")}]，右半 [${right.join(", ")}]`,
+          array: [...arr]
         });
+
+        const sortedLeft = sortSteps(left);
+        const sortedRight = sortSteps(right);
+
+        flow.push({
+          description: `合併 [${sortedLeft.join(", ")}] 與 [${sortedRight.join(", ")}]`,
+          array: [...arr]
+        });
+
+        const merged = mergeArrays(sortedLeft, sortedRight, order);
+
+        flow.push({
+          description: `合併完成：[${merged.join(", ")}]`,
+          array: [...merged]
+        });
+
+        return merged;
       }
+
+      sortSteps([...values]);
 
       flow.push({
         description: "排序完成。",
-        array: [...data]
+        array: mergeSort([...values], order)
       });
 
       return flow;
@@ -272,7 +279,7 @@
         return;
       }
 
-      steps = buildBubbleSteps(rawValues, orderSelect.value);
+      steps = buildMergeSteps(rawValues, orderSelect.value);
       stepCursor = 0;
       renderStep();
       resultText.textContent = "已建立單步模擬流程，請按「單步前進」。";
@@ -314,7 +321,7 @@
 
       const order = orderSelect.value;
       const startedAt = performance.now();
-      const sorted = bubbleSort(rawValues, order);
+      const sorted = mergeSort(rawValues, order);
       const elapsed = performance.now() - startedAt;
 
       countValue.textContent = String(rawValues.length);

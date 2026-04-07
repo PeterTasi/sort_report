@@ -10,11 +10,13 @@
   <main class="page-shell">
     <section class="top-banner glass">
       <p>Sorting Lab</p>
+      <span class="student-info">11320332 蔡旻烜</span>
       <div class="top-links">
         <a href="quick_sort.html">Quick</a>
         <a href="bubble_sort.html">Bubble</a>
         <a href="selection_sort.html">Selection</a>
         <a href="insertion_sort.html">Insertion</a>
+        <a href="merge_sort.html">Merge</a>
       </div>
     </section>
 
@@ -32,7 +34,7 @@
       <div class="hero-metrics">
         <article>
           <span>互動頁面</span>
-          <strong>4</strong>
+          <strong>5</strong>
         </article>
         <article>
           <span>可切換排序方向</span>
@@ -92,7 +94,7 @@
 
     <section class="glass panel ai-panel" id="ai-qa">
       <h2>AI 助教問答</h2>
-      <p class="ai-subtitle">輸入你對排序法的問題，系統會使用本地模型、規則模式或雲端模型回覆重點，適合課堂展示與報告互動。</p>
+      <p class="ai-subtitle">輸入你對排序法的問題，系統會優先使用本地 Ollama 模型回覆，若 Ollama 未啟動則自動切換為規則模式。</p>
 
       <div class="ai-layout">
         <div>
@@ -103,7 +105,7 @@
             <button class="secondary" id="clearAiBtn" type="button">清空</button>
           </div>
           <p class="ai-mode" id="aiModeBadge">目前模式：未偵測</p>
-          <p class="ai-hint">提示：請先啟動後端 API（Node.js），否則前端無法取得 AI 回覆。</p>
+          <p class="ai-hint">提示：請確認 Ollama 已啟動，並設定環境變數 <code>OLLAMA_ORIGINS=*</code>，否則瀏覽器無法跨來源呼叫。</p>
         </div>
 
         <div class="ai-answer-wrap">
@@ -143,6 +145,13 @@
           <p>將元素逐一插入已排序區間，小型資料或近乎排序資料時表現不錯。</p>
           <a class="go-link" href="insertion_sort.html">進入 Insertion Sort</a>
         </article>
+
+        <article class="home-card">
+          <span class="card-meta">O(n log n)</span>
+          <h3>Merge Sort</h3>
+          <p>分治法，將陣列對半切割後排序再合併，時間複雜度恆為 O(n log n)，穩定且不受資料分布影響。</p>
+          <a class="go-link" href="merge_sort.html">進入 Merge Sort</a>
+        </article>
       </div>
 
       <div class="compare-table-wrap">
@@ -180,6 +189,12 @@
               <td>O(n^2)</td>
               <td>插入已排序區間</td>
               <td>小型資料或接近有序資料示範</td>
+            </tr>
+            <tr>
+              <td>Merge Sort</td>
+              <td>O(n log n)</td>
+              <td>分治合併、複雜度穩定</td>
+              <td>需穩定排序或最差情況保證展示</td>
             </tr>
           </tbody>
         </table>

@@ -15,6 +15,10 @@ const OLLAMA_TIMEOUT_MS = Number(process.env.OLLAMA_TIMEOUT_MS || 25000);
 function buildRuleBasedAnswer(questionText) {
   const q = questionText.toLowerCase();
 
+  if (q.includes("merge") || q.includes("合併")) {
+    return "Merge Sort 是分治法，將陣列反覆對半切割，排序後再合併。時間複雜度恆為 O(n log n)，最差也不會退化，但空間複雜度為 O(n)，需要額外記憶體存放合併結果。";
+  }
+
   if (q.includes("quick") || q.includes("快速") || q.includes("快排")) {
     return "Quick Sort 是分治法，平均時間複雜度為 O(n log n)，通常比 O(n^2) 類演算法快。最差情況會退化到 O(n^2)，常見於 pivot 選不好且資料分割極不平均。";
   }
@@ -32,14 +36,14 @@ function buildRuleBasedAnswer(questionText) {
   }
 
   if (q.includes("複雜度") || q.includes("complexity") || q.includes("big o")) {
-    return "在這份報告中，Quick Sort 平均是 O(n log n)，Bubble/Selection/Insertion 平均多為 O(n^2)。若資料量增大，O(n log n) 通常會比 O(n^2) 快很多。";
+    return "在這份報告中，Merge Sort 與 Quick Sort 平均是 O(n log n)，Bubble/Selection/Insertion 平均多為 O(n^2)。若資料量增大，O(n log n) 通常會比 O(n^2) 快很多。";
   }
 
   if (q.includes("比較") || q.includes("difference") || q.includes("差異")) {
-    return "快速比較：Quick Sort 平均速度最佳；Bubble Sort 流程最直觀；Selection Sort 每輪選最值；Insertion Sort 在小型或近乎有序資料表現不錯。可依教學目的與資料特性選用。";
+    return "快速比較：Merge Sort 時間複雜度最穩定；Quick Sort 平均速度最佳；Bubble Sort 流程最直觀；Selection Sort 每輪選最值；Insertion Sort 在小型或近乎有序資料表現不錯。可依教學目的與資料特性選用。";
   }
 
-  return "這是免費規則式模式的回覆：你可以詢問 Quick/Bubble/Selection/Insertion Sort 的原理、時間複雜度、優缺點與比較。我也可以幫你整理成期中報告口語版本。";
+  return "這是免費規則式模式的回覆：你可以詢問 Merge/Quick/Bubble/Selection/Insertion Sort 的原理、時間複雜度、優缺點與比較。我也可以幫你整理成期中報告口語版本。";
 }
 
 async function getCloudAnswer(question) {
